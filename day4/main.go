@@ -9,6 +9,7 @@ import (
     "strings"
     "strconv"
     "regexp"
+
 )
 
 
@@ -103,19 +104,14 @@ func getCopies(card *Card, cards []*Card) int {
 	    matches += 1
 	}
     }
-    foundBase := false
-    for _, cur := range cards {
-	if card.cardNumber  == cur.cardNumber {
-	    foundBase = true
-	    continue
-	}
-	if matches > 0 && foundBase {
-	    cur.copies += card.copies
-	    matches--
-	}
-	if matches == 0 && foundBase {
-	    break
-	}
+    baseIndex, _ := slices.BinarySearchFunc(cards, card, compareCardNumbers)
+    baseIndex++ 
+    for i := baseIndex; i < baseIndex + matches; i++ {
+	cards[i].copies += card.copies
     }
     return card.copies
+}
+
+func compareCardNumbers(a, b *Card) int {
+    return a.cardNumber - b.cardNumber    
 }
